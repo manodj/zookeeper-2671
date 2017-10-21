@@ -63,6 +63,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.zookeeper.test.ClientBase.CountdownWatcher;
 
 public abstract class ClientBase extends ZKTestCase {
     protected static final Logger LOG = LoggerFactory.getLogger(ClientBase.class);
@@ -663,5 +664,19 @@ public abstract class ClientBase extends ZKTestCase {
             sb.append(part);
         }
         return sb.toString();
+    }
+
+    public static ZooKeeper createZKClient(String conString) throws Exception {
+        return createZKClient(conString, CONNECTION_TIMEOUT);
+    }
+
+    public static ZooKeeper createZKClient(String conString, int sesTimeout) throws Exception {
+        CountdownWatcher cd_watcher = new CountdownWatcher();
+        ZooKeeper zk = new ZooKeeper(conString, sesTimeout, cd_watcher);
+        try {
+            cd_watcher.waitForConnected(CONNECTION_TIMEOUT);
+        } catch (Exception e) {
+            Assert.fail("ZooKeeper client cant connect to " + conString);
+        }
     }
 }
