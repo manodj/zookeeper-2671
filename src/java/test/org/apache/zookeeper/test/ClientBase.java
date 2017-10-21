@@ -678,5 +678,6 @@ public abstract class ClientBase extends ZKTestCase {
         } catch (Exception e) {
             Assert.fail("ZooKeeper client cant connect to " + conString);
         }
+        return zk;
     }
 }
